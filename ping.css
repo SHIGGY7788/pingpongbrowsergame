@@ -34,3 +34,12 @@ h1 {
     margin: 10rem;
     border: 1px solid white;
 }
+
+.start_button {
+    background: lightslategray;
+    width: 5rem;
+    height: 2rem;
+    position: absolute;
+    margin-top: 5rem;
+    visibility: visible;
+}
