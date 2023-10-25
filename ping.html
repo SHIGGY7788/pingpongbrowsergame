@@ -10,13 +10,14 @@
     <div class="main">
         <h1><span class="ping" id="ping">ping</span><span id="pong">pong</span></h1>
         <button class="start_button" id="start" onclick="StartGame()">START</button>
-        <canvas class="game_background" id="game__canvas">
-
-        </canvas>
+        <div class="canvas-container">
+            <canvas class="game_background" id="game__canvas"></canvas>
+        </div>
     </div>
 </div>
-
-
+<button class="start_draw" onclick='StartDrawing()'>Start Drawing</button>
+<button class="stop_draw" onclick="StopDrawing()">Stop Drawing</button>
+<canvas class="line_canvas" id="line__canvas"></canvas>
 
 </body>
 <script src="js/ping.js"></script>

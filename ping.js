@@ -16,7 +16,8 @@ let p2GoUp = false;
 let p2GoDown = false;
 let startButton = document.getElementById('start');
 let canMove = false;
-
+let prevBallX = ballX;
+let prevBallY = ballY;
 class Player {
     constructor({
                     position = { x: 0, y: 0 },
@@ -48,59 +49,92 @@ const p2 = new Player({
     position: { x: p2x, y: p2y },
     color: 'aqua',
     height: 30
-});
+})
 
 const ball = new Player({
     position: { x: ballX, y: ballY },
     color: 'red',
     velocity: {
-        x: -2,
-        y: -2,
+        x: 0.5,
+        y: 0.5,
     },
     width: 7,
     height: 7,
     
 })
 
-function collision({ p1, p2, ball }) {
-    return (
-        p1.position.x + p1.width >= ball.position.x &&
-        p2.position.x <= ball.position.x + ball.width &&
-        p1.position.y + p1.height >= ball.position.y &&
-        p2.position.y <= ball.position.y + ball.height
-    );
+function collision(player, ball) {
+    if (canMove) {
+        return (
+            player.position.x + player.width >= ball.position.x &&
+            player.position.x <= ball.position.x + ball.width &&
+            player.position.y + player.height >= ball.position.y &&
+            player.position.y <= ball.position.y + ball.height
+
+        );
+    }
+    console.log('no collision')
+    return false;
+
 }
 
 function StartGame() {
     startButton.style.visibility = 'hidden';
     canMove = true;
-    console.log(p1x + ', ' + p1y);
-    console.log(p2x + ', ' + p2y);
+    console.log('Player1 Cords: ' + p1x + ', ' + p1y);
+    console.log('Player2 Cords: ' + p2x + ', ' + p2y);
+    drawLine()
     updateGame();
+    moveBall()
 
 }
 
-function moveBallX() {
-    ballX -= 2
-    ballY += ball.velocity.y;
-
-
+function moveBall() {
     if (ballY < 0 || ballY + ball.height > background.height) {
-        ball.velocity.y = -ball.velocity.y;
+        if (ballY < 0) {
+            // Ball hit the top edge
+            ball.velocity.y = Math.abs(ball.velocity.y);
+            ballY = 0; // Set ballY to the boundary position plus the buffer
+        }
+        if (ballY + ball.height > background.height) {
+            // Ball hit the bottom edge
+            ball.velocity.y = -Math.abs(ball.velocity.y);
+            ballY = background.height - ball.height - 1; // Set ballY to the boundary position minus the buffer
+        }
+    }
+
+    if (collision(p1, ball)) {
+        console.log('collision')
+        // Collision with p1
+        ball.velocity.x = -Math.abs(ball.velocity.x); // Reverse the ball's x velocity
+    }
+
+    if (collision(p2, ball)) {
+        console.log('collision')
+        // Collision with p2
+        ball.velocity.x = Math.abs(ball.velocity.x); // Reverse the ball's x velocity
     }
 
 
-    if (collision({ p1, p2, ball })) {
-        ball.velocity.x = -(Math.abs(ball.velocity.x))
+    if (ballX < 0 || ballX + ball.width > background.width) {
+        if (ballX < 0) {
+            // Ball hit the left edge
+            ball.velocity.x = -Math.abs(ball.velocity.x);
+            ballX = 0;
+        }
+        if (ballX + ball.width > background.width) {
+            // Ball hit the right edge
+            ball.velocity.x = Math.abs(ball.velocity.x);
+            ballX = background.width - ball.width - 1;
+        }
     }
-
-
-    if (ballX < 0 || ballX > background.width) {
-
-    }
-
-
-    requestAnimationFrame(moveBallX);
+    prevBallX = ballX;
+    prevBallY = ballY;
+    ballX -= ball.velocity.x
+    ballY += ball.velocity.y
+    ctx.fillStyle = ball.color
+    ctx.fillRect(ballX, ballY, ball.width, ball.height)
+    requestAnimationFrame(moveBall)
 }
 
 function clearCanvas() {
@@ -173,10 +207,36 @@ function updateGame() {
 
     p1.draw();
     p2.draw();
-    ball.draw();
-    moveBallX();
-    requestAnimationFrame(updateGame);
+
+    if (canMove) {
+        requestAnimationFrame(updateGame);
+    }
 }
-p1.draw();
-p2.draw();
-ball.draw();
+
+let lineCanvas = document.getElementById('line__canvas');
+let lineCtx = lineCanvas.getContext('2d');
+let drawing = false;
+
+// Function to start drawing
+function StartDrawing() {
+    drawing = true;
+    drawLine(); // Start drawing the line
+}
+
+// Function to stop drawing
+function StopDrawing() {
+    drawing = false;
+}
+
+// Function to draw the line following the ball
+function drawLine() {
+    if (drawing) {
+        lineCtx.strokeStyle = 'blue';
+        lineCtx.lineWidth = 2;
+        lineCtx.beginPath();
+        lineCtx.moveTo(prevBallX + ball.width / 2, prevBallY + ball.height / 2);
+        lineCtx.lineTo(ballX + ball.width / 2, ballY + ball.height / 2);
+        lineCtx.stroke();
+        requestAnimationFrame(drawLine);
+    }
+}
