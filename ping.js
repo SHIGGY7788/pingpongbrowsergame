@@ -55,8 +55,8 @@ const ball = new Player({
     position: { x: ballX, y: ballY },
     color: 'red',
     velocity: {
-        x: 0.5,
-        y: 0.5,
+        x: 0.8,
+        y: 0.8,
     },
     width: 7,
     height: 7,
@@ -64,18 +64,20 @@ const ball = new Player({
 })
 
 function collision(player, ball) {
-    if (canMove) {
+    if (canMove && curPlayer === 1) {
         return (
-            player.position.x + player.width >= ball.position.x &&
-            player.position.x <= ball.position.x + ball.width &&
-            player.position.y + player.height >= ball.position.y &&
-            player.position.y <= ball.position.y + ball.height
-
-        );
+            player.position.x <= ball.position.x &&
+                player.position.y >= ball.position.y
+        )
+    }
+    if (canMove && curPlayer === 2) {
+        return (
+            player.position.x >= ball.position.x &&
+            player.position.y <= ball.position.y
+        )
     }
     console.log('no collision')
-    return false;
-
+    return false
 }
 
 function StartGame() {
@@ -92,44 +94,42 @@ function StartGame() {
 function moveBall() {
     if (ballY < 0 || ballY + ball.height > background.height) {
         if (ballY < 0) {
-            // Ball hit the top edge
             ball.velocity.y = Math.abs(ball.velocity.y);
-            ballY = 0; // Set ballY to the boundary position plus the buffer
+            ballY = 0
         }
         if (ballY + ball.height > background.height) {
-            // Ball hit the bottom edge
-            ball.velocity.y = -Math.abs(ball.velocity.y);
-            ballY = background.height - ball.height - 1; // Set ballY to the boundary position minus the buffer
+            ball.velocity.y = -Math.abs(ball.velocity.y)
+            ballY = background.height - ball.height - 1
         }
     }
 
-    if (collision(p1, ball)) {
+    if (collision(p1, ball) && curPlayer === 1) {
         console.log('collision')
-        // Collision with p1
-        ball.velocity.x = -Math.abs(ball.velocity.x); // Reverse the ball's x velocity
+        ball.velocity.x = -Math.abs(ball.velocity.x)
+        curPlayer = 2
+        console.log("curPlayer: 2")
     }
 
-    if (collision(p2, ball)) {
+    if (collision(p2, ball) && curPlayer === 2) {
         console.log('collision')
-        // Collision with p2
-        ball.velocity.x = Math.abs(ball.velocity.x); // Reverse the ball's x velocity
+        ball.velocity.x = Math.abs(ball.velocity.x)
+        curPlayer = 1
+        console.log("curPlayer: 1")
     }
 
 
     if (ballX < 0 || ballX + ball.width > background.width) {
         if (ballX < 0) {
-            // Ball hit the left edge
-            ball.velocity.x = -Math.abs(ball.velocity.x);
-            ballX = 0;
+            ball.velocity.x = -Math.abs(ball.velocity.x)
+            ballX = 0
         }
         if (ballX + ball.width > background.width) {
-            // Ball hit the right edge
-            ball.velocity.x = Math.abs(ball.velocity.x);
-            ballX = background.width - ball.width - 1;
+            ball.velocity.x = Math.abs(ball.velocity.x)
+            ballX = background.width - ball.width - 1
         }
     }
-    prevBallX = ballX;
-    prevBallY = ballY;
+    prevBallX = ballX
+    prevBallY = ballY
     ballX -= ball.velocity.x
     ballY += ball.velocity.y
     ctx.fillStyle = ball.color
