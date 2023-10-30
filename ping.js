@@ -1,23 +1,23 @@
 'use strict';
 
 
-let background = document.getElementById('game__canvas');
-let ctx = background.getContext('2d');
-let curPlayer = 1;
-let p1x = 10;
-let p2x = 280;
-let ballX = 150; // Adjusted initial ball position
-let ballY = 75;  // Adjusted initial ball position
-let p1y = 45;    // Adjusted initial player 1 position
-let p2y = 45;    // Adjusted initial player 2 position
-let p1GoUp = false;
-let p1GoDown = false;
-let p2GoUp = false;
-let p2GoDown = false;
-let startButton = document.getElementById('start');
-let canMove = false;
-let prevBallX = ballX;
-let prevBallY = ballY;
+let background = document.getElementById('game__canvas')
+let ctx = background.getContext('2d')
+let curPlayer = 1
+let p1x = 10
+let p2x = 280
+let ballX = 150
+let ballY = 75
+let p1y = 45
+let p2y = 45
+let p1GoUp = false
+let p1GoDown = false
+let p2GoUp = false
+let p2GoDown = false
+let startButton = document.getElementById('start')
+let canMove = false
+let prevBallX = ballX
+let prevBallY = ballY
 class Player {
     constructor({
                     position = { x: 0, y: 0 },
@@ -26,11 +26,11 @@ class Player {
                     height = 10,
                     velocity = { x: 0, y: 0 },
                 }) {
-        this.position = position;
-        this.width = width;
-        this.height = height;
-        this.color = color;
-        this.velocity = velocity;
+        this.position = position
+        this.width = width
+        this.height = height
+        this.color = color
+        this.velocity = velocity
     }
 
     draw() {
@@ -64,20 +64,12 @@ const ball = new Player({
 })
 
 function collision(player, ball) {
-    if (canMove && curPlayer === 1) {
-        return (
-            player.position.x <= ball.position.x &&
-                player.position.y >= ball.position.y
-        )
-    }
-    if (canMove && curPlayer === 2) {
-        return (
-            player.position.x >= ball.position.x &&
-            player.position.y <= ball.position.y
-        )
-    }
-    console.log('no collision')
-    return false
+    return (
+        player.position.x < ball.position.x + ball.width &&
+        player.position.x + player.width > ball.position.x &&
+        player.position.y < ball.position.y + ball.height &&
+        player.position.y + player.height > ball.position.y
+    );
 }
 
 function StartGame() {
